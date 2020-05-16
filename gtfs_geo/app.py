@@ -9,6 +9,14 @@ from lib.gtfs_geo import export_gtfs_as_geo
 
 app = bottle.default_app()
 
+@app.get('/')
+def index():
+    return bottle.template('index.html')
+
+@app.get("/static/img/<filepath:re:.*\.(jpg|png|gif|ico|svg)>")
+def img(filepath):
+    return bottle.static_file(filepath, root=".")
+
 @app.get('/api', methods=['GET'])
 def gtfs_geo_api():
 	gtfs_url = bottle.request.params.get('gtfs_url')

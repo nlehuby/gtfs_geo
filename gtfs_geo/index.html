@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'/>
+        <title>GTFS &rarr; geo</title>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
+        <style>
+            #title {
+                font-size: 44px;
+                letter-spacing: -1px;
+                font-weight: bold;
+                margin-right: 5px;
+            }
+
+            #gtfs_url {
+                width: 70%;
+            }
+
+            .button {
+                display: inline-block;
+                text-shadow: 0 0 1px black;
+                border-radius: 3px;
+                color: white;
+                padding: 10px;
+                font-weight: bold;
+                text-decoration: none;
+                text-align: center;
+            }
+
+            #button_go {
+                background: #7CC073;
+            }
+
+            #button_go:hover {
+                background: #333;
+            }
+
+            #messages {
+                color: red;
+                padding: 10px;
+            }
+
+            footer {
+                text-align: center;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <center>
+                <span id="title">GTFS &rarr; geo
+                </span>
+                <br>Get geo info from a GTFS feed
+                <br><img src="static/img/gtfs_geo.png" alt="illustration"/>
+                <p></p>
+                <p></p>
+                <section>
+                    <input id="gtfs_url" type="url" placeholder="Link to a GTFS zip file">
+                    <a class="button" id="button_go" onclick="gtfs_to_geo()">Go</a>
+                </section>
+                <p></p>
+                <p></p>
+                <section>
+                    <span id="messages"></span>
+                </section>
+            </center>
+        </main>
+        <footer>
+            <br>This page helps you to turn a GTFS feed to some csv and geojson files easily explorable.
+
+            <p></p>
+            <a href="https://github.com/nlehuby/gtfs_geo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/30px-Octicons-mark-github.svg.png" alt="source code"></a>
+        </footer>
+    </body>
+    <script type="text/javascript">
+        function gtfs_to_geo() {
+            var messages = document.getElementById('messages');
+            messages.innerHTML = "Your GTFS is being processed, please wait."
+            var gtfs_url = document.getElementById('gtfs_url').value;
+
+            var api_url = "/api?gtfs_url=" + gtfs_url
+            fetch(api_url).then(function (data) {
+                if (data.status == 200) {
+                    return data.blob()
+                } else {
+                    throw data.statusText;
+                }
+            }).then(function (blob) {
+                let objectURL = URL.createObjectURL(blob);
+                window.location.href = objectURL;
+                messages.innerHTML = "Enjoy your geo files ;)"
+            }).catch(function (error) {
+                messages.innerHTML = "Ooops, somethins went wrong, sorry!"
+                console.error(error)
+            });
+        }
+    </script>
+</html>
