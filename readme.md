@@ -4,6 +4,7 @@ Turn a GTFS feed to geo info (csv and geojson files)
 
 ![logo](gtfs_geo/gtfs_geo.png)
 
+[Try it out](https://gtfs-geo.herokuapp.com/)
 
 ## cli usage
 In addition to the web interface, a python command line interface is also available to test on local GTFS files:

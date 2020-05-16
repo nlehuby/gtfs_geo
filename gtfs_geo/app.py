@@ -43,4 +43,7 @@ def create_gtfs_geo_file(gtfs_file_path, output_name):
 		mimetype = 'application/zip')
 
 if __name__ == '__main__':
-    bottle.run(host='0.0.0.0', port=int(os.getenv('PORT', 3000)), debug=True)
+	if os.environ.get('APP_LOCATION') == 'heroku':
+    		bottle.run(host='0.0.0.0', port=int(os.getenv('PORT', 3000)))
+	else :
+    		bottle.run(host='0.0.0.0', port=int(os.getenv('PORT', 3000)), debug=True)
