@@ -19,6 +19,15 @@ def route_type_to_mode(route_type):
     }
 	return GTFS_ROUTE_TYPES.get(route_type, "Unknown mode")
 
+def location_type_to_stop_type(location_type):
+	LOCATION_TYPES = {
+		0: "stops",
+		1: "stations",
+		2: "entrances",
+		3: "generic nodes"
+	}
+	return LOCATION_TYPES.get(location_type, "Unknown stop types")
+
 def export_gtfs_as_geo(input_gtfs_file, output_file_name):
 	working_directory = tempfile.TemporaryDirectory()
 	feed = gtfstk.read_gtfs(input_gtfs_file, dist_units='km')
@@ -65,7 +74,17 @@ def export_gtfs_as_geo(input_gtfs_file, output_file_name):
 
 	feed_w_shapes.stops.rename(columns={"stop_lat": "latitude"}, inplace=True)
 	feed_w_shapes.stops.rename(columns={"stop_lon": "longitude"}, inplace=True)
-	feed_w_shapes.stops.to_csv(os.path.join(working_directory.name, "stops.csv"))
+	
+	if "location_type" in feed_w_shapes.stops.columns:
+		feed_w_shapes.stops.fillna({'location_type':0}, inplace=True)
+		feed_w_shapes.stops['stop_type'] = feed_w_shapes.stops['location_type'].apply(lambda x: location_type_to_stop_type(x))
+	else:
+		feed_w_shapes.stops['stop_type'] = "stops"
+	
+	stop_types = feed_w_shapes.stops['stop_type'].unique()
+	for stop_type_name in stop_types:
+		stops = feed_w_shapes.stops[feed_w_shapes.stops['stop_type']==stop_type_name]
+		stops.to_csv(os.path.join(working_directory.name, "{}.csv".format(stop_type_name)))
 
 	shutil.make_archive(output_file_name.split('.')[0], 'zip', working_directory.name)
 	working_directory.cleanup()
