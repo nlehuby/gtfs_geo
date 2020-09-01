@@ -66,6 +66,14 @@ def export_gtfs_as_geo(input_gtfs_file, output_file_name):
 		with open(os.path.join(working_directory.name, "{}.geojson".format(elem["file_name"])), 'w') as fp:
 			as_geojson = feed_w_shapes.trip_to_geojson(elem["trip_id"], include_stops=True)
 			as_geojson['features'][0]['properties'] = json.loads(elem.to_json())
+			#put the stops in the right order
+			stop_id_s_in_order = list(feed_w_shapes.stop_times[feed_w_shapes.stop_times["trip_id"]==elem["trip_id"]].sort_values(by=['stop_sequence'])['stop_id'])
+			new_FeatureCollection = []
+			new_FeatureCollection.append(as_geojson['features'][0])
+			for stop_id in stop_id_s_in_order:
+				feature = [elem for elem in as_geojson['features'] if elem['properties'].get('stop_id')==stop_id]
+				new_FeatureCollection.append(feature[0])
+			as_geojson['features'] = new_FeatureCollection
 			json.dump(as_geojson, fp)
 			
 
