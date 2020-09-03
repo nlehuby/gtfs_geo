@@ -92,7 +92,7 @@ def export_gtfs_as_geo(input_gtfs_file, output_file_name):
 	stop_types = feed_w_shapes.stops['stop_type'].unique()
 	for stop_type_name in stop_types:
 		stops = feed_w_shapes.stops[feed_w_shapes.stops['stop_type']==stop_type_name]
-		stops.to_csv(os.path.join(working_directory.name, "{}.csv".format(stop_type_name)))
+		stops.to_csv(os.path.join(working_directory.name, "{}.csv".format(stop_type_name)), float_format='%.6f')
 
 	shutil.make_archive(output_file_name.split('.')[0], 'zip', working_directory.name)
 	working_directory.cleanup()
