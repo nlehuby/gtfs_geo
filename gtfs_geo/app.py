@@ -25,6 +25,10 @@ def gtfs_geo_api():
 		file_name, file_path = download_gtfs_file(gtfs_url)
 	else:
 		bottle.abort(400)
+		
+	file_info = os.stat(file_path)
+	if file_info.st_size > 1000000 and os.environ.get('APP_LOCATION') == 'heroku':
+	    bottle.abort(408)
 
 	return create_gtfs_geo_file(file_path, 'gtfs_geo_output.zip')
 

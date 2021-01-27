@@ -92,8 +92,14 @@
                 window.location.href = objectURL;
                 messages.innerHTML = "Enjoy your geo files ;)"
             }).catch(function (error) {
+            if (error == "Request Timeout"){
+                messages.innerHTML = "Sorry, this file is too big. Please try the cli version!"
+                console.error(error)
+            }
+            else {
                 messages.innerHTML = "Ooops, somethins went wrong, sorry!"
                 console.error(error)
+                }
             });
         }
     </script>
